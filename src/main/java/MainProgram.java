@@ -8,7 +8,7 @@ public class MainProgram {
 
         Loan l = new Loan(360, 100000, 0.05);
 
-        System.out.println("Loan Payment is: " + l.getPayment());
+        System.out.println("Loan Payment is: " + l.calculatePayment());
 
     }
 }

@@ -19,12 +19,12 @@ public class Loan {
     private double interestRate;
     public double getInterestRate() {return interestRate;}
 
-    public double getPayment(){
+    public double calculatePayment(){
         double loanPayment = 0;
         // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
+        // should be 536.82
         double monthlyInterestRate = interestRate / 12;
-        loanPayment = (loanAmount*(monthlyInterestRate)*Math.pow((1+monthlyInterestRate),termInMonths)) / (Math.pow((1+monthlyInterestRate), termInMonths-1));
-
+        loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
         return loanPayment;
     }
 
