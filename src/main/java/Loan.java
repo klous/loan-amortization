@@ -17,6 +17,15 @@ public class Loan {
     private double interestRate;
     public double getInterestRate() {return interestRate;}
 
+    //todo add private method to format the numbers to return them ALWAYS with 2 decimals
+
+    private String formatNumber(double number){
+        String formattedString = "";
+
+        formattedString = number.toString()
+
+    }
+
     private double getInterestPayment(double principalBalance){
         double monthlyInterest = principalBalance * ((interestRate / 100) / 12);
         return round(monthlyInterest, 2);
