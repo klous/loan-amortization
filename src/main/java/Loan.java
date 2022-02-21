@@ -15,7 +15,7 @@ public class Loan {
     }
 
     /**
-     * Use numbers like 5.75 is equivalent to 5.75%
+     * Use numbers like 5.75 would be equivalent to 5.75%
      */
     private double interestRate;
     public double getInterestRate() {return interestRate;}
@@ -24,14 +24,12 @@ public class Loan {
 
     private String formatNumber(double number){
         DecimalFormat df = new DecimalFormat("#.00");
-
         return df.format(number);
 
     }
 
     private double roundMyNum(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
-
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
@@ -39,7 +37,6 @@ public class Loan {
 
     private double getInterestPayment(double principalBalance) {
         double monthlyInterest = principalBalance * (interestRate / NUMBER_OF_MONTHS_IN_YEAR);
-
         return roundMyNum(monthlyInterest, 2);
     }
 
@@ -64,17 +61,47 @@ public class Loan {
 
     /**
      *
-     * @param termInMonths
+     * @param termInMonths loan term in months
      * @param loanAmount represent the initial loan amount / principal amount
      * @param interestRate use numbers like 5.75 = 5.75%
      */
-
     public Loan(double loanAmount, double interestRate, int termInMonths){
         this.termInMonths = termInMonths;
         this.loanAmount = loanAmount;
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
     }
 
+    /**
+     *
+     * @param loanAmount loan amount
+     * @param interestRate interest rate in number like 5 = 5% or 7.5 = 7.5%
+     */
+    public Loan(double loanAmount, double interestRate){
+        this.loanAmount = loanAmount;
+        this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
+    }
+
+    public String displayLoanAmortizationTable(){
+        // calculate the first payment and how much is interest vs. principal
+        double interestPayment = getInterestOnlyPayment();
+        double principalBalance = loanAmount;
+        double loanPayment = calculatePayment();
+        double principalPayment = roundMyNum(loanPayment - interestPayment,2);
+        String outputString = "Loan Amount: $" + loanAmount + " | Your payment is: $" + loanPayment;
+        principalBalance = roundMyNum(principalBalance - principalPayment, 2);
+        outputString += "\nPayment Number: 1 | Principal: "+ principalPayment + " Interest: "+ interestPayment + "New Balance: "+ principalBalance;
+        for(int i = 2; i <= termInMonths; i++){
+            interestPayment = getInterestPayment(principalBalance);
+            principalPayment = roundMyNum(loanPayment - interestPayment, 2);
+            principalBalance = roundMyNum(principalBalance-principalPayment, 2);
+            outputString += "\n";
+            outputString +=  "Payment Number: " + i + " | ";
+            outputString += " Princpal: " + principalPayment;
+            outputString += " Interest: " + interestPayment;
+            outputString += " New Balance: " + principalBalance;
+        }
+        return outputString;
+    }
 
 }
 
