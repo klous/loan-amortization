@@ -1,10 +1,13 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 public class Loan {
     private int termInMonths;
     public int getTermInMonths() {return termInMonths;}
 
+    private final int NUMBER_OF_MONTHS_IN_YEAR = 12;
+    private final int NUMBER_OF_DAYS_IN_A_YEAR = 365;
 
     private double loanAmount;
     public double getLoanAmount(){
@@ -20,29 +23,13 @@ public class Loan {
     //todo add private method to format the numbers to return them ALWAYS with 2 decimals
 
     private String formatNumber(double number){
-        String formattedString = "";
+        DecimalFormat df = new DecimalFormat("#.00");
 
-        formattedString = number.toString()
+        return df.format(number);
 
     }
 
-    private double getInterestPayment(double principalBalance){
-        double monthlyInterest = principalBalance * ((interestRate / 100) / 12);
-        return round(monthlyInterest, 2);
-    }
-
-    public double getPerDiemInterest(){
-        double perDiemInterest = loanAmount * (interestRate/100/365);
-        return round(perDiemInterest, 2);
-    }
-
-    public double getInterestOnlyPayment(){
-        return round(getInterestPayment(loanAmount), 2);
-    }
-
-
-    // method that rounds using BigDecimal
-    private double round(double value, int places) {
+    private double roundMyNum(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = BigDecimal.valueOf(value);
@@ -50,36 +37,30 @@ public class Loan {
         return bd.doubleValue();
     }
 
+    private double getInterestPayment(double principalBalance) {
+        double monthlyInterest = principalBalance * (interestRate / NUMBER_OF_MONTHS_IN_YEAR);
 
-    public double calculatePayment(){
-        double interestRateDecimal = interestRate / 100;
-        // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
-        // should be 536.82
-        double monthlyInterestRate = interestRateDecimal / 12;
-        double loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
-        return round(loanPayment, 2);
+        return roundMyNum(monthlyInterest, 2);
     }
 
 
+    public double getPerDiemInterest(){
+        double perDiemInterest = loanAmount * (interestRate/NUMBER_OF_DAYS_IN_A_YEAR);
+        return roundMyNum(perDiemInterest, 2);
+    }
 
-//    public BigDecimal getPayment(){
-//        BigDecimal payment = BigDecimal.ZERO;
-//        payment.setScale(2, RoundingMode.HALF_UP);
-//        //if loan amount was 100000, interest rate 7.5%, term in months = 360
-//        // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
-//        BigDecimal monthlyRate = interestRate.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
-//
-//        BigDecimal intermediateStep = BigDecimal.ZERO;
-//        intermediateStep.setScale(2, RoundingMode.HALF_UP);
-//
-//        intermediateStep = (loanAmount.multiply(monthlyRate.multiply(monthlyRate.add(BigDecimal.ONE)).pow(termInMonths)));
-//        // 100,000 with 5% interest rate shoudl be 22,338.72 at this point
-//
-//        payment = (loanAmount.multiply(monthlyRate.multiply(monthlyRate.add(BigDecimal.ONE)).pow(termInMonths))).divide
-//                ((monthlyRate.add(BigDecimal.ONE)).pow(termInMonths-1));
-//
-//        return payment;
-//    }
+    public double getInterestOnlyPayment(){
+        return roundMyNum(getInterestPayment(loanAmount), 2);
+    }
+
+    public double calculatePayment(){
+        // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
+        // should be 536.82
+        double monthlyInterestRate = interestRate / 12;
+        double loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
+        return roundMyNum(loanPayment, 2);
+    }
+
 
     /**
      *
@@ -91,8 +72,9 @@ public class Loan {
     public Loan(double loanAmount, double interestRate, int termInMonths){
         this.termInMonths = termInMonths;
         this.loanAmount = loanAmount;
-        this.interestRate = interestRate;
+        this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
     }
 
 
 }
+
