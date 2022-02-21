@@ -89,16 +89,21 @@ public class Loan {
         double principalPayment = roundMyNum(loanPayment - interestPayment,2);
         String outputString = "Loan Amount: $" + loanAmount + " | Your payment is: $" + loanPayment;
         principalBalance = roundMyNum(principalBalance - principalPayment, 2);
-        outputString += "\nPayment Number: 1 | Principal: "+ principalPayment + " Interest: "+ interestPayment + " New Balance: "+ principalBalance;
+        outputString += "\nPayment Number: 1 |  Principal: $"+ principalPayment + " Interest: $"+ interestPayment + " New Balance: $"+ principalBalance;
         for(int i = 2; i <= termInMonths; i++){
             interestPayment = getInterestPayment(principalBalance);
             principalPayment = roundMyNum(loanPayment - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             outputString += "\n";
             outputString +=  "Payment Number: " + i + " | ";
-            outputString += " Princpal: " + principalPayment;
-            outputString += " Interest: " + interestPayment;
-            outputString += " New Balance: " + principalBalance;
+            outputString += " Princpal: $" + principalPayment;
+            outputString += " Interest: $" + interestPayment;
+            if(principalBalance<=0){
+                outputString+= " Final Balance: $0.00";
+            } else{
+                outputString += " New Balance: $" + principalBalance;
+            }
+
         }
         return outputString;
     }
