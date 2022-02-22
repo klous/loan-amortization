@@ -25,7 +25,6 @@ public class Loan {
     private String formatNumber(double number){
         DecimalFormat df = new DecimalFormat("#.00");
         return df.format(number);
-
     }
 
     private double roundMyNum(double value, int places) {
@@ -87,21 +86,21 @@ public class Loan {
         double principalBalance = loanAmount;
         double loanPayment = calculatePayment();
         double principalPayment = roundMyNum(loanPayment - interestPayment,2);
-        String outputString = "Loan Amount: $" + loanAmount + " | Your payment is: $" + loanPayment;
+        String outputString = "Loan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment);
         principalBalance = roundMyNum(principalBalance - principalPayment, 2);
-        outputString += "\nPayment Number: 1 |  Principal: $"+ principalPayment + " Interest: $"+ interestPayment + " New Balance: $"+ principalBalance;
+        outputString += "\nPayment Number: 1 |  Principal: $"+ formatNumber(principalPayment) + " Interest: $"+ formatNumber(interestPayment) + " New Balance: $"+ formatNumber(principalBalance);
         for(int i = 2; i <= termInMonths; i++){
             interestPayment = getInterestPayment(principalBalance);
             principalPayment = roundMyNum(loanPayment - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             outputString += "\n";
             outputString +=  "Payment Number: " + i + " | ";
-            outputString += " Princpal: $" + principalPayment;
-            outputString += " Interest: $" + interestPayment;
+            outputString += " Principal: $" + formatNumber(principalPayment);
+            outputString += " Interest: $" + formatNumber(interestPayment);
             if(principalBalance<=0){
                 outputString+= " Final Balance: $0.00";
             } else{
-                outputString += " New Balance: $" + principalBalance;
+                outputString += " New Balance: $" + formatNumber(principalBalance);
             }
 
         }
