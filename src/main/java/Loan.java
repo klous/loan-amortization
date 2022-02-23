@@ -90,23 +90,24 @@ public class Loan {
         String outputString = "\nLoan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ formatNumber(interestRate*100) + "%" + "\n";
         //todo add printout of the interest rate here, formatted nicely
         principalBalance = roundMyNum(principalBalance - principalPayment, 2);
-        outputString += "\nPayment Number:   1 |  Principal: $"+ formatNumber(principalPayment) + " Interest: $"+ formatNumber(interestPayment) + " New Balance: $"+ formatNumber(principalBalance);
+        outputString += "\nPayment Number: \t1\t| Principal: $"+ formatNumber(principalPayment) + " Interest: $"+ formatNumber(interestPayment) + " New Balance: $"+ formatNumber(principalBalance);
         for(int i = 2; i <= termInMonths; i++){
             interestPayment = getInterestPayment(principalBalance);
             totalInterestPaid += interestPayment;
             principalPayment = roundMyNum(loanPayment - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             outputString += "\n";
-            outputString +=  "Payment Number: ";
-                    if(i<10){
-                        outputString += "  ";
-                    } else if(i<100){
-                        outputString += " ";
-                    } else {
-                        outputString += " ";
-                    }
+            outputString += "Payment Number: ";
+//            outputString +=  "Payment Number: ";
+//                    if(i<10){
+//                        outputString += "  ";
+//                    } else if(i<100){
+//                        outputString += " ";
+//                    } else {
+//                        outputString += " ";
+//                    }
 
-            outputString += i + " | ";
+            outputString += "\t" + i + "\t| ";
             outputString += " Principal: $" + formatNumber(principalPayment);
             outputString += " Interest: $" + formatNumber(interestPayment);
             if(principalBalance<=1){
