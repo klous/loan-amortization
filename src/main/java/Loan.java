@@ -23,7 +23,7 @@ public class Loan {
     //todo add private method to format the numbers to return them ALWAYS with 2 decimals
 
     private String formatNumber(double number){
-        DecimalFormat df = new DecimalFormat("#.00");
+        DecimalFormat df = new DecimalFormat("###,###,###.00");
         return df.format(number);
     }
 
@@ -90,14 +90,23 @@ public class Loan {
         String outputString = "Loan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment);
         //todo add printout of the interest rate here, formatted nicely
         principalBalance = roundMyNum(principalBalance - principalPayment, 2);
-        outputString += "\nPayment Number: 1 |  Principal: $"+ formatNumber(principalPayment) + " Interest: $"+ formatNumber(interestPayment) + " New Balance: $"+ formatNumber(principalBalance);
+        outputString += "\nPayment Number:   1 |  Principal: $"+ formatNumber(principalPayment) + " Interest: $"+ formatNumber(interestPayment) + " New Balance: $"+ formatNumber(principalBalance);
         for(int i = 2; i <= termInMonths; i++){
             interestPayment = getInterestPayment(principalBalance);
             totalInterestPaid += interestPayment;
             principalPayment = roundMyNum(loanPayment - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             outputString += "\n";
-            outputString +=  "Payment Number: " + i + " | ";
+            outputString +=  "Payment Number: ";
+                    if(i<10){
+                        outputString += "  ";
+                    } else if(i<100){
+                        outputString += " ";
+                    } else {
+                        outputString += " ";
+                    }
+
+            outputString += i + " | ";
             outputString += " Principal: $" + formatNumber(principalPayment);
             outputString += " Interest: $" + formatNumber(interestPayment);
             if(principalBalance<=0){

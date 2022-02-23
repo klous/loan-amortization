@@ -10,7 +10,7 @@ public class MainProgram {
         System.out.println("Your monthly interest (Interest Only) is: " + l.getInterestOnlyPayment());
         System.out.println("Your per diem interest is: " + l.getPerDiemInterest());
 
-        System.out.println(l.displayLoanAmortizationTable());
+        System.out.format(l.displayLoanAmortizationTable());
 
     }
 }
