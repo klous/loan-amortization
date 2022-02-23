@@ -56,7 +56,6 @@ public class Loan {
         return roundMyNum(loanPayment, 2);
     }
 
-    //todo fix what happens at the end of the loan amortization table where the payment can change for the last one when the remaining principal is less than the payment
 
     /**
      *
@@ -88,18 +87,18 @@ public class Loan {
 
         double totalInterestPaid = 0;
 
-        outputString += "Payment No. \tPrincipal \t\t\tInterest \t Ending Balance";
+        outputString += "Payment No. \tPrincipal \t\t\tInterest \t\tEnding Balance";
 
+        //todo update this to adapt / allow for additional payments
         for(int i = 1; i <= termInMonths; i++){
             double interestPayment = getInterestPayment(principalBalance);
             totalInterestPaid += interestPayment;
             double principalPayment = roundMyNum(loanPayment - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             outputString += "\n";
-//            outputString += "Payment Number: ";
+
             outputString += "\t" + i;
 
-            //outputString += "Principal: \t$" + formatNumber(principalPayment) + "\t";
             outputString += "\t\t\t$" + formatNumber(principalPayment) + "\t";
 
 
@@ -107,12 +106,12 @@ public class Loan {
             if(principalPayment<1000){
                 outputString +="\t";
             }
-            //outputString += "Interest: \t$" + formatNumber(interestPayment) + "\t\t";
+
             outputString += "\t\t$" + formatNumber(interestPayment) + "\t";
             if(interestPayment<1000){
                 outputString +="\t";
             }
-            //outputString += "\t$" + formatNumber(principalBalance);
+            
             if(principalBalance<=1){
                outputString += "\t$0.00";
             }else {
@@ -120,7 +119,7 @@ public class Loan {
             }
 
         }
-        outputString += "\n\n TOTAL INTEREST PAID: $" + formatNumber(totalInterestPaid);
+        outputString += "\n\n TOTAL INTEREST PAID: $" + formatNumber(totalInterestPaid) + "\n";
 
         return outputString;
     }

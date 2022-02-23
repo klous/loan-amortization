@@ -19,7 +19,7 @@ public class MainProgram {
         Loan loan = new Loan(loanAmount, interestRate, termInMonths); */
 
         //For testing
-        Loan loan = new Loan(2500000,10,120);
+        Loan loan = new Loan(250000,10,120);
 
 
 
