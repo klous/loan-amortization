@@ -22,7 +22,7 @@ public class Loan {
 
 
     private String formatNumber(double number){
-        DecimalFormat df = new DecimalFormat("###,###,###.00");
+        DecimalFormat df = new DecimalFormat("#,###.00");
         return df.format(number);
     }
 
@@ -84,9 +84,11 @@ public class Loan {
         double principalBalance = loanAmount;
         double loanPayment = calculatePayment();
 
-        String outputString = "\nLoan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ formatNumber(interestRate*100) + "%" + "\n";
+        String outputString = "\nLoan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ formatNumber(interestRate*100) + "%" + "\n\n";
 
         double totalInterestPaid = 0;
+
+        outputString += "Payment No. \tPrincipal \t\t\tInterest \t Ending Balance";
 
         for(int i = 1; i <= termInMonths; i++){
             double interestPayment = getInterestPayment(principalBalance);
@@ -94,17 +96,27 @@ public class Loan {
             double principalPayment = roundMyNum(loanPayment - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             outputString += "\n";
-            outputString += "Payment Number: ";
-            outputString += "\t" + i + "\t|\t";
-            outputString += "Principal: \t$" + formatNumber(principalPayment) + "\t";
+//            outputString += "Payment Number: ";
+            outputString += "\t" + i;
+
+            //outputString += "Principal: \t$" + formatNumber(principalPayment) + "\t";
+            outputString += "\t\t\t$" + formatNumber(principalPayment) + "\t";
+
+
+            // accounts for the size (in characters) of the principal payment in my spacing
             if(principalPayment<1000){
                 outputString +="\t";
             }
-            outputString += "Interest: \t$" + formatNumber(interestPayment) + "\t\t";
+            //outputString += "Interest: \t$" + formatNumber(interestPayment) + "\t\t";
+            outputString += "\t\t$" + formatNumber(interestPayment) + "\t";
+            if(interestPayment<1000){
+                outputString +="\t";
+            }
+            //outputString += "\t$" + formatNumber(principalBalance);
             if(principalBalance<=1){
-                outputString+= "Final Balance: \t$0.00";
-            } else {
-                outputString += "New Balance: \t$" + formatNumber(principalBalance);
+               outputString += "\t$0.00";
+            }else {
+                outputString += "\t$" + formatNumber(principalBalance);
             }
 
         }

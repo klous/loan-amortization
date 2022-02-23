@@ -4,7 +4,7 @@ public class MainProgram {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
 
-        System.out.println("\nWelcome to the loan amortization calculator!");
+       /* System.out.println("\nWelcome to the loan amortization calculator!");
         System.out.println("What is the loan amount?");
         String loanAmountInput = userInput.nextLine();
         double loanAmount = Double.parseDouble(loanAmountInput);
@@ -16,8 +16,10 @@ public class MainProgram {
         System.out.println("What is the interest rate? e.g. enter '5' for 5% or '3.25' for 3.25%");
         String interestRateInput = userInput.nextLine();
         double interestRate = Double.parseDouble(interestRateInput);
+        Loan loan = new Loan(loanAmount, interestRate, termInMonths); */
 
-        Loan loan = new Loan(loanAmount, interestRate, termInMonths);
+        //For testing
+        Loan loan = new Loan(2500000,10,120);
 
 
 
