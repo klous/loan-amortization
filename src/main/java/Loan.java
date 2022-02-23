@@ -81,29 +81,26 @@ public class Loan {
     }
 
     public String displayLoanAmortizationTable(){
-        // calculate the first payment and how much is interest vs. principal
-        double interestPayment = getInterestOnlyPayment();
         double principalBalance = loanAmount;
         double loanPayment = calculatePayment();
-        double principalPayment = loanPayment - interestPayment;
-        double totalInterestPaid = interestPayment;
+
         String outputString = "\nLoan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ formatNumber(interestRate*100) + "%" + "\n";
 
+        double totalInterestPaid = 0;
 
-        principalBalance = roundMyNum(principalBalance - principalPayment, 2);
-
-        //todo put this inside the loop and fix the math so it is correct
-        outputString += "\nPayment Number: \t1\t|\tPrincipal: $"+ formatNumber(principalPayment) + " Interest: $"+ formatNumber(interestPayment) + " New Balance: $"+ formatNumber(principalBalance);
-        for(int i = 2; i <= termInMonths; i++){
-            interestPayment = getInterestPayment(principalBalance);
+        for(int i = 1; i <= termInMonths; i++){
+            double interestPayment = getInterestPayment(principalBalance);
             totalInterestPaid += interestPayment;
-            principalPayment = roundMyNum(loanPayment - interestPayment, 2);
+            double principalPayment = roundMyNum(loanPayment - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             outputString += "\n";
             outputString += "Payment Number: ";
             outputString += "\t" + i + "\t|\t";
             outputString += "Principal: \t$" + formatNumber(principalPayment) + "\t";
-            outputString += "\tInterest: \t$" + formatNumber(interestPayment) + "\t\t";
+            if(principalPayment<1000){
+                outputString +="\t";
+            }
+            outputString += "Interest: \t$" + formatNumber(interestPayment) + "\t\t";
             if(principalBalance<=1){
                 outputString+= "Final Balance: \t$0.00";
             } else {
