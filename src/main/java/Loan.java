@@ -10,9 +10,13 @@ public class Loan {
     private final int NUMBER_OF_DAYS_IN_A_YEAR = 365;
 
     private double loanAmount;
-    public double getLoanAmount(){
-        return loanAmount;
-    }
+    public double getLoanAmount(){return loanAmount;}
+
+    private double extraPrincipalPayment;
+
+    public double getExtraPrincipalPayment() {return extraPrincipalPayment;}
+
+    public void setExtraPrincipalPayment(double extraPrincipalPayment) {this.extraPrincipalPayment = extraPrincipalPayment;}
 
     /**
      * Use numbers like 5.75 would be equivalent to 5.75%
@@ -67,7 +71,17 @@ public class Loan {
         this.termInMonths = termInMonths;
         this.loanAmount = loanAmount;
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
+        extraPrincipalPayment = 0;
     }
+
+    public Loan(double loanAmount, double interestRate, int termInMonths, double extraPrincipalPayment){
+        this.termInMonths = termInMonths;
+        this.loanAmount = loanAmount;
+        this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
+        this.extraPrincipalPayment = extraPrincipalPayment;
+    }
+
+
 
     /**
      *
@@ -89,15 +103,19 @@ public class Loan {
 
         outputString += "Payment No. \tPrincipal \t\t\tInterest \t\tEnding Balance";
 
-        //todo update this to adapt / allow for additional payments
-        for(int i = 1; i <= termInMonths; i++){
+        //todo update this to adapt / allow for additional payments -- maybe a while loop with a counter for the number of payments
+        int paymentNumber = 1;
+        while(principalBalance>0){
+            if (principalBalance<loanPayment){ // at the end, the principal balance can drop below the required loan payment, especially when extra payments are made
+                loanPayment = principalBalance;
+            }
             double interestPayment = getInterestPayment(principalBalance);
             totalInterestPaid += interestPayment;
             double principalPayment = roundMyNum(loanPayment - interestPayment, 2);
-            principalBalance = roundMyNum(principalBalance-principalPayment, 2);
+            principalBalance = roundMyNum(principalBalance-principalPayment-extraPrincipalPayment, 2);
             outputString += "\n";
 
-            outputString += "\t" + i;
+            outputString += "\t" + paymentNumber;
 
             outputString += "\t\t\t$" + formatNumber(principalPayment) + "\t";
 
@@ -111,13 +129,13 @@ public class Loan {
             if(interestPayment<1000){
                 outputString +="\t";
             }
-            
-            if(principalBalance<=1){
-               outputString += "\t$0.00";
-            }else {
-                outputString += "\t$" + formatNumber(principalBalance);
-            }
-
+            outputString += "\t$" + formatNumber(principalBalance);
+//            if(principalBalance<=1){
+//               outputString += "\t$0.00";
+//            }else {
+//                outputString += "\t$" + formatNumber(principalBalance);
+//            }
+        paymentNumber ++;
         }
         outputString += "\n\n TOTAL INTEREST PAID: $" + formatNumber(totalInterestPaid) + "\n";
 
