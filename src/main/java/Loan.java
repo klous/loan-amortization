@@ -20,7 +20,6 @@ public class Loan {
     private double interestRate;
     public double getInterestRate() {return interestRate;}
 
-    //todo add private method to format the numbers to return them ALWAYS with 2 decimals
 
     private String formatNumber(double number){
         DecimalFormat df = new DecimalFormat("###,###,###.00");
@@ -57,6 +56,7 @@ public class Loan {
         return roundMyNum(loanPayment, 2);
     }
 
+    //todo fix what happens at the end of the loan amortization table where the payment can change for the last one when the remaining principal is less than the payment
 
     /**
      *
@@ -85,9 +85,9 @@ public class Loan {
         double interestPayment = getInterestOnlyPayment();
         double principalBalance = loanAmount;
         double loanPayment = calculatePayment();
-        double principalPayment = roundMyNum(loanPayment - interestPayment,2);
+        double principalPayment = loanPayment - interestPayment;
         double totalInterestPaid = interestPayment;
-        String outputString = "Loan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment);
+        String outputString = "\nLoan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ formatNumber(interestRate*100) + "%" + "\n";
         //todo add printout of the interest rate here, formatted nicely
         principalBalance = roundMyNum(principalBalance - principalPayment, 2);
         outputString += "\nPayment Number:   1 |  Principal: $"+ formatNumber(principalPayment) + " Interest: $"+ formatNumber(interestPayment) + " New Balance: $"+ formatNumber(principalBalance);
@@ -109,7 +109,7 @@ public class Loan {
             outputString += i + " | ";
             outputString += " Principal: $" + formatNumber(principalPayment);
             outputString += " Interest: $" + formatNumber(interestPayment);
-            if(principalBalance<=0){
+            if(principalBalance<=1){
                 outputString+= " Final Balance: $0.00";
             } else {
                 outputString += " New Balance: $" + formatNumber(principalBalance);
