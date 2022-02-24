@@ -1,3 +1,6 @@
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class MainProgram {
@@ -43,7 +46,30 @@ public class MainProgram {
             loan = new Loan(loanAmount, interestRate, termInMonths);
         }
 
-        System.out.println(loan.displayLoanAmortizationTable());
+/*
+        List<Map<String, Object>> myPayments = loan.createLoanAmortization();
+        for(Map<String, Object> payment: myPayments){
+            for(String k : payment.keySet()){
+                System.out.println("Key: "+ k + " " + payment.get(k));
+            }
+        }*/
+
+
+
+
+        //        for(String k : myLHM.keySet()){
+//            System.out.println("Key: "+ k + " " + myLHM.get(k));
+//        }
+
+
+
+//        Map<String, Object> myLHM = createLHM();
+//
+//        for(String k : myLHM.keySet()){
+//            System.out.println("Key: "+ k + " " + myLHM.get(k));
+//        }
+
+        // System.out.println(loan.displayLoanAmortizationTable());
 
 //        //For testing
 //        Loan loan = new Loan(250000,10,120);
@@ -55,7 +81,16 @@ public class MainProgram {
 //        System.out.println("Your monthly interest (Interest Only) is: " + l.getInterestOnlyPayment());
 //        System.out.println("Your per diem interest is: " + l.getPerDiemInterest());
 
-        // System.out.print(loan.displayLoanAmortizationTable());
+System.out.print(loan.displayLoanAmortizationTable());
 
+    }
+
+    private static Map<String, Object> createLHM() {
+        Map<String, Object> payPeriod = new LinkedHashMap<>();
+        payPeriod.put("paymentNumber", 1);
+        payPeriod.put("Principal Payment", 400);
+        payPeriod.put("Interest Payment", 600);
+        payPeriod.put("New Balance", 99123.12);
+        return payPeriod;
     }
 }

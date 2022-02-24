@@ -1,6 +1,7 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.*;
 
 public class Loan {
     private int termInMonths;
@@ -93,6 +94,48 @@ public class Loan {
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
     }
 
+    //todo put the values into an list of arrays? each array contains data per loan period -- LinkedHashMap ? or SortedMap
+    // Map<String, Object> <-- Object can be whatever... 
+
+    //todo make this private
+
+    //todo another class for that data model - to have that object
+
+    public List<Map<String, Object>> createLoanAmortization(){
+
+        List<Map<String, Object>> paymentList = new ArrayList<>();
+        double principalBalance = loanAmount;
+        double loanPayment = calculatePayment();
+        int paymentNumber = 1;
+        while(principalBalance>0){
+
+            Map<String, Object> payPeriod = new LinkedHashMap<>();
+            if (principalBalance<loanPayment){ // at the end, the principal balance can drop below the required loan payment, especially when extra payments are made
+                loanPayment = principalBalance;
+            }
+            double interestPayment = getInterestPayment(principalBalance);
+
+            double principalPayment = roundMyNum(loanPayment - interestPayment, 2);
+            principalBalance = roundMyNum(principalBalance-principalPayment-extraPrincipalPayment, 2);
+
+            payPeriod.put("Payment Number", paymentNumber);
+            payPeriod.put("Principal Payment", principalPayment);
+            payPeriod.put("Interest Payment", interestPayment);
+            payPeriod.put("Ending Balance", principalBalance);
+
+            paymentList.add(payPeriod);
+
+            paymentNumber ++;
+        }
+
+        return paymentList;
+    }
+
+
+
+
+
+
     public String displayLoanAmortizationTable(){
         double principalBalance = loanAmount;
         double loanPayment = calculatePayment();
@@ -103,9 +146,14 @@ public class Loan {
 
         outputString += "Payment No. \tPrincipal \t\t\tInterest \t\tEnding Balance";
 
-        //todo update this to adapt / allow for additional payments -- maybe a while loop with a counter for the number of payments
+
+
+        //todo update this method so that it creates an array of payments, each item in the array is a key-value pair containing the payment, interst payment, principal payment, and new balance
+
+        //todo then this array of payments can be compared with a loan without separate payments or with a different interest rate and be able to compare them
+
         int paymentNumber = 1;
-        while(principalBalance>0){
+        while(principalBalance>0 && paymentNumber<= termInMonths){
             if (principalBalance<loanPayment){ // at the end, the principal balance can drop below the required loan payment, especially when extra payments are made
                 loanPayment = principalBalance;
             }
@@ -129,12 +177,13 @@ public class Loan {
             if(interestPayment<1000){
                 outputString +="\t";
             }
-            outputString += "\t$" + formatNumber(principalBalance);
-//            if(principalBalance<=1){
-//               outputString += "\t$0.00";
-//            }else {
-//                outputString += "\t$" + formatNumber(principalBalance);
-//            }
+            //outputString += "\t$" + formatNumber(principalBalance);
+
+            if(principalBalance<=1){
+               outputString += "\t$0.00";
+            }else {
+                outputString += "\t$" + formatNumber(principalBalance);
+            }
         paymentNumber ++;
         }
         outputString += "\n\n TOTAL INTEREST PAID: $" + formatNumber(totalInterestPaid) + "\n";
