@@ -8,7 +8,7 @@ public class MainProgram {
         Scanner userInput = new Scanner(System.in);
 
         System.out.println("\nWelcome to the loan amortization calculator!");
-        System.out.print("What is the loan amount? ");
+        System.out.print("\nWhat is the loan amount? ");
         String loanAmountInput = userInput.nextLine();
         double loanAmount = Double.parseDouble(loanAmountInput);
 
@@ -16,7 +16,7 @@ public class MainProgram {
         String termInMonthsInput = userInput.nextLine();
         int termInMonths = Integer.parseInt(termInMonthsInput);
 
-        System.out.print("What is the interest rate? ( '5' for 5% or '3.25' for 3.25% ) ");
+        System.out.print("What is the interest rate? ( '5' for 5% or '3.25' for 3.25% ) >> ");
         String interestRateInput = userInput.nextLine();
         double interestRate = Double.parseDouble(interestRateInput);
 
@@ -25,7 +25,7 @@ public class MainProgram {
         boolean extraPayment = false;
 
         while(!validInput){
-            System.out.println("Would you like to make an extra payment each month and see how it affects your loan amortization? (Y)es or (N)o");
+            System.out.print("Would you like to make an extra payment each month and see how it affects your loan amortization? (Y)es or (N)o >> ");
             String extraPaymentYN = userInput.nextLine();
             if(extraPaymentYN.equalsIgnoreCase("Y")){
                 extraPayment = true;

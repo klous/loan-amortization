@@ -8,7 +8,7 @@ public class Loan {
     public int getTermInMonths() {return termInMonths;}
 
     private List<Payment> paymentList = new ArrayList<>();
-
+    private List<Payment> noExtraPrincipalPaymentList = new ArrayList<>();
 
     private final int NUMBER_OF_MONTHS_IN_YEAR = 12;
     private final int NUMBER_OF_DAYS_IN_A_YEAR = 365;
@@ -16,7 +16,7 @@ public class Loan {
     private double loanAmount;
     public double getLoanAmount(){return loanAmount;}
 
-    private double extraPrincipalPayment;
+    private double extraPrincipalPayment = 0;
 
     public double getExtraPrincipalPayment() {return extraPrincipalPayment;}
 
@@ -75,8 +75,8 @@ public class Loan {
         this.termInMonths = termInMonths;
         this.loanAmount = loanAmount;
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
-        extraPrincipalPayment = 0;
-        paymentList = createActualLoanAmortizationPaymentList();
+        paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
+
     }
 
     public Loan(double loanAmount, double interestRate, int termInMonths, double extraPrincipalPayment){
@@ -84,10 +84,19 @@ public class Loan {
         this.loanAmount = loanAmount;
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
         this.extraPrincipalPayment = extraPrincipalPayment;
-        paymentList = createActualLoanAmortizationPaymentList();
+        paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
+        // create this baseleine loan amortization to be able to compare them.
+        noExtraPrincipalPaymentList = createLoanAmortizationPaymentList(0);
     }
 
+    private double getTotalInterestPaid(List<Payment> paymentList){
+        double totalInterestPaid = 0;
+        for(Payment payment : paymentList){
+            totalInterestPaid += payment.getInterest();
+        }
 
+        return totalInterestPaid;
+    }
 
     /**
      *
@@ -99,8 +108,8 @@ public class Loan {
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
     }
 
-
-    private List <Payment> createActualLoanAmortizationPaymentList(){
+    // consider how to have one function that can create both tables
+    private List <Payment> createLoanAmortizationPaymentList(double extraPrincipalPaymentValue){
 
         List <Payment> paymentList = new ArrayList<>();
         double principalBalance = loanAmount;
@@ -114,7 +123,7 @@ public class Loan {
             }
             double interestPayment = getInterestPayment(principalBalance);
 
-            double principalPayment = roundMyNum(loanPayment + extraPrincipalPayment - interestPayment, 2);
+            double principalPayment = roundMyNum(loanPayment + extraPrincipalPaymentValue - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
             Payment payment = new Payment(paymentNumber, loanPayment, principalPayment, interestPayment, principalBalance);
 
@@ -125,33 +134,6 @@ public class Loan {
 
         return paymentList;
     }
-
-    private List <Payment> createBothAmortizationTables(double extraPrincipalPaymentAmount){
-
-        List <Payment> paymentList = new ArrayList<>();
-        double principalBalance = loanAmount;
-        double loanPayment = getLoanPayment();
-        int paymentNumber = 1;
-        while(principalBalance>0 && paymentNumber <= termInMonths){
-
-
-            if (principalBalance<loanPayment){ // at the end, the principal balance can drop below the required loan payment, especially when extra payments are made
-                loanPayment = principalBalance;
-            }
-            double interestPayment = getInterestPayment(principalBalance);
-
-            double principalPayment = roundMyNum(loanPayment - interestPayment, 2);
-            principalBalance = roundMyNum(principalBalance-principalPayment-extraPrincipalPayment, 2);
-            Payment payment = new Payment(paymentNumber, loanPayment, principalPayment, interestPayment, principalBalance);
-
-            paymentList.add(payment);
-
-            paymentNumber ++;
-        }
-
-        return paymentList;
-    }
-
 
     public String displayLoanAmortizationTableFromPaymentList(){
         double loanPayment = getLoanPayment();
@@ -169,7 +151,7 @@ public class Loan {
            double principalPayment = payment.getPrincipalApplied(); //todo shouldn't this add on the extra principal portion?
            double interestPayment = payment.getInterest();
            double principalBalance = payment.getEndingBalance();
-           totalInterestPaid += interestPayment;
+           totalInterestPaid = getTotalInterestPaid(paymentList);
             outputString += "\n";
 
             outputString += "\t" + paymentNumber;
