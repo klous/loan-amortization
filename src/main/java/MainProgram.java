@@ -8,15 +8,15 @@ public class MainProgram {
         Scanner userInput = new Scanner(System.in);
 
         System.out.println("\nWelcome to the loan amortization calculator!");
-        System.out.println("What is the loan amount?");
+        System.out.print("What is the loan amount? ");
         String loanAmountInput = userInput.nextLine();
         double loanAmount = Double.parseDouble(loanAmountInput);
 
-        System.out.println("What is the term / length of loan in months?");
+        System.out.print("What is the term / length of loan in months? ");
         String termInMonthsInput = userInput.nextLine();
         int termInMonths = Integer.parseInt(termInMonthsInput);
 
-        System.out.println("What is the interest rate? ( '5' for 5% or '3.25' for 3.25% )");
+        System.out.print("What is the interest rate? ( '5' for 5% or '3.25' for 3.25% ) ");
         String interestRateInput = userInput.nextLine();
         double interestRate = Double.parseDouble(interestRateInput);
 
@@ -46,51 +46,11 @@ public class MainProgram {
             loan = new Loan(loanAmount, interestRate, termInMonths);
         }
 
-/*
-        List<Map<String, Object>> myPayments = loan.createLoanAmortization();
-        for(Map<String, Object> payment: myPayments){
-            for(String k : payment.keySet()){
-                System.out.println("Key: "+ k + " " + payment.get(k));
-            }
-        }*/
+
+        System.out.print(loan.displayLoanAmortizationTableFromPaymentList());
 
 
-
-
-        //        for(String k : myLHM.keySet()){
-//            System.out.println("Key: "+ k + " " + myLHM.get(k));
-//        }
-
-
-
-//        Map<String, Object> myLHM = createLHM();
-//
-//        for(String k : myLHM.keySet()){
-//            System.out.println("Key: "+ k + " " + myLHM.get(k));
-//        }
-
-        // System.out.println(loan.displayLoanAmortizationTable());
-
-//        //For testing
-//        Loan loan = new Loan(250000,10,120);
-
-
-
-        //Loan l = new Loan( 40000, 5, 36);
-        //System.out.println("Loan Payment is: " + l.calculatePayment());
-//        System.out.println("Your monthly interest (Interest Only) is: " + l.getInterestOnlyPayment());
-//        System.out.println("Your per diem interest is: " + l.getPerDiemInterest());
-
-System.out.print(loan.displayLoanAmortizationTable());
 
     }
 
-    private static Map<String, Object> createLHM() {
-        Map<String, Object> payPeriod = new LinkedHashMap<>();
-        payPeriod.put("paymentNumber", 1);
-        payPeriod.put("Principal Payment", 400);
-        payPeriod.put("Interest Payment", 600);
-        payPeriod.put("New Balance", 99123.12);
-        return payPeriod;
-    }
 }
