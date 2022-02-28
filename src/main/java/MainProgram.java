@@ -20,7 +20,6 @@ public class MainProgram {
         String interestRateInput = userInput.nextLine();
         double interestRate = Double.parseDouble(interestRateInput);
 
-
         boolean validInput = false;
         boolean extraPayment = false;
 
@@ -46,10 +45,7 @@ public class MainProgram {
             loan = new Loan(loanAmount, interestRate, termInMonths);
         }
 
-
         System.out.print(loan.displayLoanAmortizationTableFromPaymentList());
-
-
 
     }
 

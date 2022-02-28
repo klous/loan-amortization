@@ -116,19 +116,18 @@ public class Loan {
         double loanPayment = getLoanPayment();
         int paymentNumber = 1;
         while(principalBalance>0 && paymentNumber <= termInMonths){
-
-
-            if (principalBalance<loanPayment){ // at the end, the principal balance can drop below the required loan payment, especially when extra payments are made
-                loanPayment = principalBalance;
-            }
             double interestPayment = getInterestPayment(principalBalance);
 
             double principalPayment = roundMyNum(loanPayment + extraPrincipalPaymentValue - interestPayment, 2);
             principalBalance = roundMyNum(principalBalance-principalPayment, 2);
+
+            // On the last payment, the principal balance should zero out
+            if(interestPayment == principalBalance){
+                principalBalance = 0;
+            }
+
             Payment payment = new Payment(paymentNumber, loanPayment, principalPayment, interestPayment, principalBalance);
-
             paymentList.add(payment);
-
             paymentNumber ++;
         }
 
