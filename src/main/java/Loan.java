@@ -94,8 +94,7 @@ public class Loan {
         for(Payment payment : paymentList){
             totalInterestPaid += payment.getInterest();
         }
-
-        return totalInterestPaid;
+        return roundMyNum(totalInterestPaid, 2);
     }
 
     /**
@@ -106,6 +105,15 @@ public class Loan {
     public Loan(double loanAmount, double interestRate){
         this.loanAmount = loanAmount;
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
+    }
+
+    private double getDifferenceInInterestPaid(){
+        double baseLineInterest = getTotalInterestPaid(noExtraPrincipalPaymentList);
+
+        double totalInterestPaid = getTotalInterestPaid(paymentList);
+
+        // return the difference between the baseline loan payment set total interest and actual total interest
+        return roundMyNum(baseLineInterest - totalInterestPaid, 2);
     }
 
     // consider how to have one function that can create both tables
@@ -178,6 +186,7 @@ public class Loan {
         outputString += "\n\n TOTAL INTEREST PAID: $" + formatNumber(totalInterestPaid) + "\n";
         if(paymentList.size()<termInMonths){
             outputString+= "Number of Payments You didn't have to make because of your extra payments: "+ (termInMonths - paymentList.size());
+            outputString+= "\nTotal Interest saved: $"+formatNumber(getDifferenceInInterestPaid());
         }
 
         return outputString;

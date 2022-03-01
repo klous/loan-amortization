@@ -1,6 +1,4 @@
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
 import java.util.Scanner;
 
 public class MainProgram {
@@ -37,7 +35,7 @@ public class MainProgram {
         }
        Loan loan = null;
         if(extraPayment){
-            System.out.print("How much extra (on top of your required payment) would you like to pay each month?");
+            System.out.print("How much extra (on top of your required payment) would you like to pay each month? ");
             String extraLoanPaymentInput = userInput.nextLine();
             double extraLoanPayment = Double.parseDouble(extraLoanPaymentInput);
             loan = new Loan(loanAmount, interestRate, termInMonths, extraLoanPayment);
