@@ -21,7 +21,7 @@ public class Loan {
 
     public BigDecimal getExtraPrincipalPayment() {return extraPrincipalPayment;}
 
-    public void setExtraPrincipalPayment(double extraPrincipalPayment) {this.extraPrincipalPayment = extraPrincipalPayment;}
+    public void setExtraPrincipalPayment(BigDecimal extraPrincipalPayment) {this.extraPrincipalPayment = extraPrincipalPayment;}
 
     /**
      * Use numbers like 5.75 would be equivalent to 5.75%
@@ -42,27 +42,29 @@ public class Loan {
         return bd.doubleValue();
     }
 
-    private double getInterestPayment(double principalBalance) {
-        double monthlyInterest = principalBalance * (interestRate / NUMBER_OF_MONTHS_IN_YEAR);
-        return roundMyNum(monthlyInterest, 2);
+    private BigDecimal getInterestPayment(BigDecimal principalBalance) {
+        BigDecimal monthlyInterest = principalBalance.multiply(interestRate.divide(new BigDecimal(NUMBER_OF_MONTHS_IN_YEAR)));
+        return monthlyInterest.setScale(2, RoundingMode.HALF_UP);
     }
 
+    //todo fix this for BD
+//    public double getPerDiemInterest(){
+//        double perDiemInterest = loanAmount * (interestRate/NUMBER_OF_DAYS_IN_A_YEAR);
+//        return roundMyNum(perDiemInterest, 2);
+//    }
+    //todo fix this for BD
+//    //public double getInterestOnlyPayment(){
+//        return roundMyNum(getInterestPayment(loanAmount), 2);
+//    }
 
-    public double getPerDiemInterest(){
-        double perDiemInterest = loanAmount * (interestRate/NUMBER_OF_DAYS_IN_A_YEAR);
-        return roundMyNum(perDiemInterest, 2);
-    }
-
-    public double getInterestOnlyPayment(){
-        return roundMyNum(getInterestPayment(loanAmount), 2);
-    }
-
-    public double getLoanPayment(){
+    public BigDecimal getLoanPayment(){
         // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
         // should be 536.82
-        BigDecimal monthlyInterestRate = interestRate.divide(new BigDecimal("12"));
-        double loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
-        return roundMyNum(loanPayment, 2);
+        BigDecimal monthlyInterestRate = interestRate.divide(new BigDecimal("12"),15, RoundingMode.HALF_UP );
+
+        BigDecimal loanPaymentBD = (monthlyInterestRate.multiply(loanAmount)).divide((BigDecimal.ONE.subtract((BigDecimal.ONE.add(monthlyInterestRate).pow(-termInMonths)))),2, RoundingMode.HALF_UP);
+        //double loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
+        return loanPaymentBD;
     }
 
 
@@ -76,18 +78,24 @@ public class Loan {
         this.termInMonths = termInMonths;
         this.loanAmount = new BigDecimal(loanAmount);
         this.interestRate = getDecimalInterestRate(interestRate); // convert into decimal upon constructor taking the input
-        paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
+
+        //todo uncomment this once paymentList fixed
+        //paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
 
     }
 
-    public Loan(double loanAmount, double interestRate, int termInMonths, double extraPrincipalPayment){
+    public Loan(String loanAmount, String interestRate, int termInMonths, String extraPrincipalPayment){
         this.termInMonths = termInMonths;
         this.loanAmount = new BigDecimal(loanAmount);
-        this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
-        this.extraPrincipalPayment = extraPrincipalPayment;
-        paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
-        // create this baseleine loan amortization to be able to compare them.
-        noExtraPrincipalPaymentList = createLoanAmortizationPaymentList(0);
+        this.interestRate = getDecimalInterestRate(interestRate); // convert into decimal upon constructor taking the input
+        this.extraPrincipalPayment = new BigDecimal(extraPrincipalPayment);
+
+        //todo uncomment this once paymentList fixed
+        //paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
+
+        // create this baseline loan amortization to be able to compare them.
+        //todo uncomment this once paymentList fixed
+        //noExtraPrincipalPaymentList = createLoanAmortizationPaymentList(0);
     }
 
     private double getTotalInterestPaid(List<Payment> paymentList){
@@ -111,9 +119,9 @@ public class Loan {
 
     private BigDecimal getDecimalInterestRate(String interestRate) {
         BigDecimal interestRateBD = new BigDecimal(interestRate);
-        interestRateBD.setScale(3, RoundingMode.HALF_UP);
         interestRateBD = interestRateBD.divide(BigDecimal.valueOf(100));
-        return interestRateBD;
+        // set the scale to cover 5 decimal places - e.g. 3.875 --> 0.03875
+        return  interestRateBD.setScale(5, RoundingMode.HALF_UP);
     }
 
     private double getDifferenceInInterestPaid(){
@@ -126,7 +134,8 @@ public class Loan {
     }
 
     // consider how to have one function that can create both tables
-    private List <Payment> createLoanAmortizationPaymentList(double extraPrincipalPaymentValue){
+    //todo fix this for BigDecimal
+   /* private List <Payment> createLoanAmortizationPaymentList(double extraPrincipalPaymentValue){
 
         List <Payment> paymentList = new ArrayList<>();
         double principalBalance = loanAmount;
@@ -149,10 +158,10 @@ public class Loan {
         }
 
         return paymentList;
-    }
-
-    public String displayLoanAmortizationTableFromPaymentList(){
-        double loanPayment = getLoanPayment();
+    }*/
+    //todo fix for BigDecimal
+    /*public String displayLoanAmortizationTableFromPaymentList(){
+        BigDecimal loanPayment = getLoanPayment();
 
         // header
         String outputString = "\nLoan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ formatNumber(interestRate*100) + "%" + "\n\n";
@@ -199,7 +208,7 @@ public class Loan {
         }
 
         return outputString;
-    }
+    }*/
 
 
 }

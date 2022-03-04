@@ -1,14 +1,22 @@
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class MainProgram {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
 
+        //userPrompting(userInput);
+
+        Loan loan = new Loan("100000", "5", 360);
+        BigDecimal ir = loan.getInterestRate();
+        BigDecimal loanPayment = loan.getLoanPayment();
+    }
+
+    private static void userPrompting(Scanner userInput) {
         System.out.println("\nWelcome to the loan amortization calculator!");
         System.out.print("\nWhat is the loan amount? ");
         String loanAmountInput = userInput.nextLine();
-        double loanAmount = Double.parseDouble(loanAmountInput);
 
         System.out.print("What is the term / length of loan in months? ");
         String termInMonthsInput = userInput.nextLine();
@@ -16,7 +24,6 @@ public class MainProgram {
 
         System.out.print("What is the interest rate? ( '5' for 5% or '3.25' for 3.25% ) >> ");
         String interestRateInput = userInput.nextLine();
-        double interestRate = Double.parseDouble(interestRateInput);
 
         boolean validInput = false;
         boolean extraPayment = false;
@@ -33,18 +40,16 @@ public class MainProgram {
                 System.out.println("Please enter valid input ('y' or 'n')");
             }
         }
-       Loan loan = null;
+        Loan loan = null;
         if(extraPayment){
             System.out.print("How much extra (on top of your required payment) would you like to pay each month? ");
             String extraLoanPaymentInput = userInput.nextLine();
-            double extraLoanPayment = Double.parseDouble(extraLoanPaymentInput);
-            loan = new Loan(loanAmount, interestRate, termInMonths, extraLoanPayment);
+            loan = new Loan(loanAmountInput, interestRateInput, termInMonths, extraLoanPaymentInput);
         }else{
-            loan = new Loan(loanAmount, interestRate, termInMonths);
+            loan = new Loan(loanAmountInput, interestRateInput, termInMonths);
         }
 
-        System.out.print(loan.displayLoanAmortizationTableFromPaymentList());
-
+        //System.out.print(loan.displayLoanAmortizationTableFromPaymentList());
     }
 
 }
