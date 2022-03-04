@@ -13,20 +13,21 @@ public class Loan {
     private final int NUMBER_OF_MONTHS_IN_YEAR = 12;
     private final int NUMBER_OF_DAYS_IN_A_YEAR = 365;
 
-    private double loanAmount;
-    public double getLoanAmount(){return loanAmount;}
 
-    private double extraPrincipalPayment = 0;
+    private BigDecimal loanAmount;
+    public BigDecimal getLoanAmount(){return loanAmount;}
 
-    public double getExtraPrincipalPayment() {return extraPrincipalPayment;}
+    private BigDecimal extraPrincipalPayment = BigDecimal.ZERO;
+
+    public BigDecimal getExtraPrincipalPayment() {return extraPrincipalPayment;}
 
     public void setExtraPrincipalPayment(double extraPrincipalPayment) {this.extraPrincipalPayment = extraPrincipalPayment;}
 
     /**
      * Use numbers like 5.75 would be equivalent to 5.75%
      */
-    private double interestRate;
-    public double getInterestRate() {return interestRate;}
+    private BigDecimal interestRate;
+    public BigDecimal getInterestRate() {return interestRate;}
 
 
     private String formatNumber(double number){
@@ -59,7 +60,7 @@ public class Loan {
     public double getLoanPayment(){
         // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
         // should be 536.82
-        double monthlyInterestRate = interestRate / 12;
+        BigDecimal monthlyInterestRate = interestRate.divide(new BigDecimal("12"));
         double loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
         return roundMyNum(loanPayment, 2);
     }
@@ -71,17 +72,17 @@ public class Loan {
      * @param loanAmount represent the initial loan amount / principal amount
      * @param interestRate use numbers like 5.75 = 5.75%
      */
-    public Loan(double loanAmount, double interestRate, int termInMonths){
+    public Loan(String loanAmount, String interestRate, int termInMonths){
         this.termInMonths = termInMonths;
-        this.loanAmount = loanAmount;
-        this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
+        this.loanAmount = new BigDecimal(loanAmount);
+        this.interestRate = getDecimalInterestRate(interestRate); // convert into decimal upon constructor taking the input
         paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
 
     }
 
     public Loan(double loanAmount, double interestRate, int termInMonths, double extraPrincipalPayment){
         this.termInMonths = termInMonths;
-        this.loanAmount = loanAmount;
+        this.loanAmount = new BigDecimal(loanAmount);
         this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
         this.extraPrincipalPayment = extraPrincipalPayment;
         paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
@@ -99,12 +100,20 @@ public class Loan {
 
     /**
      *
-     * @param loanAmount loan amount
+  /*   * @param loanAmount loan amount
      * @param interestRate interest rate in number like 5 = 5% or 7.5 = 7.5%
-     */
-    public Loan(double loanAmount, double interestRate){
-        this.loanAmount = loanAmount;
-        this.interestRate = interestRate / 100; // convert into decimal upon constructor taking the input
+     *//*
+    public Loan(String loanAmount, String interestRate, int termInMonths){
+        this.loanAmount = new BigDecimal(loanAmount);
+        this.interestRate = getDecimalInterestRate(interestRate);
+        this.termInMonths = termInMonths;
+    }*/
+
+    private BigDecimal getDecimalInterestRate(String interestRate) {
+        BigDecimal interestRateBD = new BigDecimal(interestRate);
+        interestRateBD.setScale(3, RoundingMode.HALF_UP);
+        interestRateBD = interestRateBD.divide(BigDecimal.valueOf(100));
+        return interestRateBD;
     }
 
     private double getDifferenceInInterestPaid(){
