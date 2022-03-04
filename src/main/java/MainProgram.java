@@ -8,9 +8,6 @@ public class MainProgram {
 
         userPrompting(userInput);
 
-
-//        Loan loan = new Loan("100000", "5", 360);
-//        BigDecimal loanPayment = loan.getLoanPayment();
     }
 
     private static void userPrompting(Scanner userInput) {

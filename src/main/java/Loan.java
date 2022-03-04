@@ -31,17 +31,17 @@ public class Loan {
     public BigDecimal getInterestRate() {return interestRate;}
 
 
-/*    private String formatNumber(double number){
+    private String formatNumber(BigDecimal number){
         DecimalFormat df = new DecimalFormat("#,###.00");
         return df.format(number);
     }
 
-    private double roundMyNum(double value, int places) {
+
+    private double roundMyBD(BigDecimal bd,  int places) {
         if (places < 0) throw new IllegalArgumentException();
-        BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
-    }*/
+    }
 
     private BigDecimal getInterestPayment(BigDecimal principalBalance) {
         BigDecimal monthlyInterest = principalBalance.multiply(interestRate.divide(new BigDecimal(NUMBER_OF_MONTHS_IN_YEAR), 15, RoundingMode.HALF_UP));
@@ -58,13 +58,11 @@ public class Loan {
     }
 
     public BigDecimal getLoanPayment(){
-        // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
-        // should be 536.82
+
         BigDecimal monthlyInterestRate = interestRate.divide(new BigDecimal("12"),15, RoundingMode.HALF_UP );
 
         BigDecimal loanPaymentBD = (monthlyInterestRate.multiply(loanAmount)).divide
                 ((BigDecimal.ONE.subtract((BigDecimal.ONE.add(monthlyInterestRate).pow(-termInMonths, MathContext.DECIMAL32)))),2, RoundingMode.HALF_UP);
-        //double loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
         return loanPaymentBD;
     }
 
@@ -84,13 +82,18 @@ public class Loan {
         paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
 
     }
-
+    /**
+     *
+     * @param termInMonths loan term in months
+     * @param loanAmount represent the initial loan amount / principal amount
+     * @param interestRate use numbers like 5.75 = 5.75%
+     * @param extraPrincipalPayment add extra monthly payment to principal
+     */
     public Loan(String loanAmount, String interestRate, int termInMonths, String extraPrincipalPayment){
         this.termInMonths = termInMonths;
         this.loanAmount = new BigDecimal(loanAmount);
         this.interestRate = getDecimalInterestRate(interestRate); // convert into decimal upon constructor taking the input
         this.extraPrincipalPayment = new BigDecimal(extraPrincipalPayment);
-
 
         paymentList = createLoanAmortizationPaymentList(new BigDecimal(extraPrincipalPayment));
 
@@ -105,17 +108,6 @@ public class Loan {
         }
         return totalInterestPaid;
     }
-
-    /**
-     *
-  /*   * @param loanAmount loan amount
-     * @param interestRate interest rate in number like 5 = 5% or 7.5 = 7.5%
-     *//*
-    public Loan(String loanAmount, String interestRate, int termInMonths){
-        this.loanAmount = new BigDecimal(loanAmount);
-        this.interestRate = getDecimalInterestRate(interestRate);
-        this.termInMonths = termInMonths;
-    }*/
 
     private BigDecimal getDecimalInterestRate(String interestRate) {
         BigDecimal interestRateBD = new BigDecimal(interestRate);
@@ -132,8 +124,6 @@ public class Loan {
         // return the difference between the baseline loan payment set total interest and actual total interest
         return baseLineInterest.subtract(totalInterestPaid);
     }
-
-    // consider how to have one function that can create both tables
 
     private List <Payment> createLoanAmortizationPaymentList(BigDecimal extraPrincipalPaymentValue){
 
@@ -159,12 +149,11 @@ public class Loan {
 
         return paymentList;
     }
-    //todo fix for BigDecimal
     public String displayLoanAmortizationTableFromPaymentList(){
         BigDecimal loanPayment = getLoanPayment();
 
         // header
-        String outputString = "\nLoan Amount: $" +loanAmount + " | Your payment is: $" + loanPayment + " Interest Rate: "+ interestRate.multiply(new BigDecimal(100)) + "%" + "\n\n";
+        String outputString = "\nLoan Amount: $" +formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ roundMyBD(interestRate.multiply(new BigDecimal(100)), 3) + "%" + "\n\n";
 
         BigDecimal totalInterestPaid = BigDecimal.ZERO;
 
@@ -181,7 +170,7 @@ public class Loan {
 
             outputString += "\t" + paymentNumber;
 
-            outputString += "\t\t\t$" + principalPayment + "\t";
+            outputString += "\t\t\t$" + formatNumber(principalPayment) + "\t";
 
 
             // accounts for the size (in characters) of the principal payment in my spacing
@@ -197,14 +186,14 @@ public class Loan {
             if(principalBalance.compareTo(BigDecimal.ONE)<0){
                 outputString += "\t$0.00";
             }else {
-                outputString += "\t$" + principalBalance;
+                outputString += "\t$" + formatNumber(principalBalance);
             }
 
         }
-        outputString += "\n\n TOTAL INTEREST PAID: $" + totalInterestPaid + "\n";
+        outputString += "\n\n TOTAL INTEREST PAID: $" + formatNumber(totalInterestPaid) + "\n";
         if(paymentList.size()<termInMonths){
             outputString+= "Number of Payments You didn't have to make because of your extra payments: "+ (termInMonths - paymentList.size());
-            outputString+= "\nTotal Interest saved: $"+getDifferenceInInterestPaid();
+            outputString+= "\nTotal Interest saved: $"+formatNumber(getDifferenceInInterestPaid());
         }
 
         return outputString;
