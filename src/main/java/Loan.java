@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -43,26 +44,27 @@ public class Loan {
     }
 
     private BigDecimal getInterestPayment(BigDecimal principalBalance) {
-        BigDecimal monthlyInterest = principalBalance.multiply(interestRate.divide(new BigDecimal(NUMBER_OF_MONTHS_IN_YEAR)));
+        BigDecimal monthlyInterest = principalBalance.multiply(interestRate.divide(new BigDecimal(NUMBER_OF_MONTHS_IN_YEAR), 15, RoundingMode.HALF_UP));
         return monthlyInterest.setScale(2, RoundingMode.HALF_UP);
     }
 
     //todo fix this for BD
-//    public double getPerDiemInterest(){
-//        double perDiemInterest = loanAmount * (interestRate/NUMBER_OF_DAYS_IN_A_YEAR);
-//        return roundMyNum(perDiemInterest, 2);
-//    }
-    //todo fix this for BD
-//    //public double getInterestOnlyPayment(){
-//        return roundMyNum(getInterestPayment(loanAmount), 2);
-//    }
+    public BigDecimal getPerDiemInterest(){
+        BigDecimal perDiemInterest = loanAmount.multiply(interestRate.divide(BigDecimal.valueOf(NUMBER_OF_DAYS_IN_A_YEAR), 15, RoundingMode.HALF_UP));
+        return perDiemInterest.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getInterestOnlyPayment(){
+        return getInterestPayment(loanAmount);
+    }
 
     public BigDecimal getLoanPayment(){
         // payment = 100000*(0.05/12)*(1+0.05/12)^360   /    (1+0.075/12)^360 - 1)
         // should be 536.82
         BigDecimal monthlyInterestRate = interestRate.divide(new BigDecimal("12"),15, RoundingMode.HALF_UP );
 
-        BigDecimal loanPaymentBD = (monthlyInterestRate.multiply(loanAmount)).divide((BigDecimal.ONE.subtract((BigDecimal.ONE.add(monthlyInterestRate).pow(-termInMonths)))),2, RoundingMode.HALF_UP);
+        BigDecimal loanPaymentBD = (monthlyInterestRate.multiply(loanAmount)).divide
+                ((BigDecimal.ONE.subtract((BigDecimal.ONE.add(monthlyInterestRate).pow(-termInMonths, MathContext.DECIMAL32)))),2, RoundingMode.HALF_UP);
         //double loanPayment = (monthlyInterestRate * loanAmount) / (1-Math.pow(1+monthlyInterestRate, -termInMonths));
         return loanPaymentBD;
     }
