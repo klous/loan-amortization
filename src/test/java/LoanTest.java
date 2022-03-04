@@ -23,7 +23,7 @@ public class LoanTest {
 
         Assert.assertEquals("160,000 loan @ 7% should have interest only payment of 933.33", expectedPayment, actualPayment);
     }
-    
+
     @Test
     public void test_calculate_per_diem_interest_135k_at_7_point_5_percent(){
         Loan loan = new Loan("135000", "7.5", 360);

@@ -31,7 +31,7 @@ public class Loan {
     public BigDecimal getInterestRate() {return interestRate;}
 
 
-    private String formatNumber(double number){
+/*    private String formatNumber(double number){
         DecimalFormat df = new DecimalFormat("#,###.00");
         return df.format(number);
     }
@@ -41,14 +41,13 @@ public class Loan {
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
-    }
+    }*/
 
     private BigDecimal getInterestPayment(BigDecimal principalBalance) {
         BigDecimal monthlyInterest = principalBalance.multiply(interestRate.divide(new BigDecimal(NUMBER_OF_MONTHS_IN_YEAR), 15, RoundingMode.HALF_UP));
         return monthlyInterest.setScale(2, RoundingMode.HALF_UP);
     }
 
-    //todo fix this for BD
     public BigDecimal getPerDiemInterest(){
         BigDecimal perDiemInterest = loanAmount.multiply(interestRate.divide(BigDecimal.valueOf(NUMBER_OF_DAYS_IN_A_YEAR), 15, RoundingMode.HALF_UP));
         return perDiemInterest.setScale(2, RoundingMode.HALF_UP);
@@ -82,7 +81,7 @@ public class Loan {
         this.interestRate = getDecimalInterestRate(interestRate); // convert into decimal upon constructor taking the input
 
         //todo uncomment this once paymentList fixed
-        //paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
+        paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
 
     }
 
@@ -92,20 +91,19 @@ public class Loan {
         this.interestRate = getDecimalInterestRate(interestRate); // convert into decimal upon constructor taking the input
         this.extraPrincipalPayment = new BigDecimal(extraPrincipalPayment);
 
-        //todo uncomment this once paymentList fixed
-        //paymentList = createLoanAmortizationPaymentList(extraPrincipalPayment);
+
+        paymentList = createLoanAmortizationPaymentList(new BigDecimal(extraPrincipalPayment));
 
         // create this baseline loan amortization to be able to compare them.
-        //todo uncomment this once paymentList fixed
-        //noExtraPrincipalPaymentList = createLoanAmortizationPaymentList(0);
+        noExtraPrincipalPaymentList = createLoanAmortizationPaymentList(BigDecimal.ZERO);
     }
 
-    private double getTotalInterestPaid(List<Payment> paymentList){
-        double totalInterestPaid = 0;
+    private BigDecimal getTotalInterestPaid(List<Payment> paymentList){
+        BigDecimal totalInterestPaid = BigDecimal.ZERO;
         for(Payment payment : paymentList){
-            totalInterestPaid += payment.getInterest();
+            totalInterestPaid = totalInterestPaid.add(payment.getInterestPayment());
         }
-        return roundMyNum(totalInterestPaid, 2);
+        return totalInterestPaid;
     }
 
     /**
@@ -126,32 +124,32 @@ public class Loan {
         return  interestRateBD.setScale(5, RoundingMode.HALF_UP);
     }
 
-    private double getDifferenceInInterestPaid(){
-        double baseLineInterest = getTotalInterestPaid(noExtraPrincipalPaymentList);
+    private BigDecimal getDifferenceInInterestPaid(){
+        BigDecimal baseLineInterest = getTotalInterestPaid(noExtraPrincipalPaymentList);
 
-        double totalInterestPaid = getTotalInterestPaid(paymentList);
+        BigDecimal totalInterestPaid = getTotalInterestPaid(paymentList);
 
         // return the difference between the baseline loan payment set total interest and actual total interest
-        return roundMyNum(baseLineInterest - totalInterestPaid, 2);
+        return baseLineInterest.subtract(totalInterestPaid);
     }
 
     // consider how to have one function that can create both tables
-    //todo fix this for BigDecimal
-   /* private List <Payment> createLoanAmortizationPaymentList(double extraPrincipalPaymentValue){
+
+    private List <Payment> createLoanAmortizationPaymentList(BigDecimal extraPrincipalPaymentValue){
 
         List <Payment> paymentList = new ArrayList<>();
-        double principalBalance = loanAmount;
-        double loanPayment = getLoanPayment();
+        BigDecimal principalBalance = loanAmount;
+        BigDecimal loanPayment = getLoanPayment();
         int paymentNumber = 1;
-        while(principalBalance>0 && paymentNumber <= termInMonths){
-            double interestPayment = getInterestPayment(principalBalance);
+        while(principalBalance.compareTo(BigDecimal.ZERO) > 0 && paymentNumber <= termInMonths){
+            BigDecimal interestPayment = getInterestPayment(principalBalance);
 
-            double principalPayment = roundMyNum(loanPayment + extraPrincipalPaymentValue - interestPayment, 2);
-            principalBalance = roundMyNum(principalBalance-principalPayment, 2);
+            BigDecimal principalPayment = loanPayment.add(extraPrincipalPaymentValue).subtract(interestPayment);
+            principalBalance = principalBalance.subtract(principalPayment);
 
             // On the last payment, the principal balance should zero out
-            if(interestPayment == principalBalance){
-                principalBalance = 0;
+            if(interestPayment.compareTo(principalBalance)==0 ){
+                principalBalance = BigDecimal.ZERO;
             }
 
             Payment payment = new Payment(paymentNumber, loanPayment, principalPayment, interestPayment, principalBalance);
@@ -160,58 +158,57 @@ public class Loan {
         }
 
         return paymentList;
-    }*/
+    }
     //todo fix for BigDecimal
-    /*public String displayLoanAmortizationTableFromPaymentList(){
+    public String displayLoanAmortizationTableFromPaymentList(){
         BigDecimal loanPayment = getLoanPayment();
 
         // header
-        String outputString = "\nLoan Amount: $" + formatNumber(loanAmount) + " | Your payment is: $" + formatNumber(loanPayment) + " Interest Rate: "+ formatNumber(interestRate*100) + "%" + "\n\n";
+        String outputString = "\nLoan Amount: $" +loanAmount + " | Your payment is: $" + loanPayment + " Interest Rate: "+ interestRate.multiply(new BigDecimal(100)) + "%" + "\n\n";
 
-        double totalInterestPaid = 0;
+        BigDecimal totalInterestPaid = BigDecimal.ZERO;
 
         outputString += "Payment No. \tPrincipal \t\t\tInterest \t\tEnding Balance";
 
 
         for(Payment payment : paymentList){
            int paymentNumber = payment.getPaymentNumber();
-           double principalPayment = payment.getPrincipalApplied(); //todo shouldn't this add on the extra principal portion?
-           double interestPayment = payment.getInterest();
-           double principalBalance = payment.getEndingBalance();
+           BigDecimal principalPayment = payment.getPrincipalApplied();
+           BigDecimal interestPayment = payment.getInterestPayment();
+           BigDecimal principalBalance = payment.getEndingBalance();
            totalInterestPaid = getTotalInterestPaid(paymentList);
             outputString += "\n";
 
             outputString += "\t" + paymentNumber;
 
-            outputString += "\t\t\t$" + formatNumber(principalPayment) + "\t";
+            outputString += "\t\t\t$" + principalPayment + "\t";
 
 
             // accounts for the size (in characters) of the principal payment in my spacing
-            if(principalPayment<1000){
+            if(principalPayment.compareTo(new BigDecimal(1000))<0){
                 outputString +="\t";
             }
 
-            outputString += "\t\t$" + formatNumber(interestPayment) + "\t";
-            if(interestPayment<1000){
+            outputString += "\t\t$" + interestPayment + "\t";
+            if(interestPayment.compareTo(new BigDecimal(1000))<0){
                 outputString +="\t";
             }
 
-            if(principalBalance<=1){
+            if(principalBalance.compareTo(BigDecimal.ONE)<0){
                 outputString += "\t$0.00";
             }else {
-                outputString += "\t$" + formatNumber(principalBalance);
+                outputString += "\t$" + principalBalance;
             }
 
         }
-        outputString += "\n\n TOTAL INTEREST PAID: $" + formatNumber(totalInterestPaid) + "\n";
+        outputString += "\n\n TOTAL INTEREST PAID: $" + totalInterestPaid + "\n";
         if(paymentList.size()<termInMonths){
             outputString+= "Number of Payments You didn't have to make because of your extra payments: "+ (termInMonths - paymentList.size());
-            outputString+= "\nTotal Interest saved: $"+formatNumber(getDifferenceInInterestPaid());
+            outputString+= "\nTotal Interest saved: $"+getDifferenceInInterestPaid();
         }
 
         return outputString;
-    }*/
-
+    }
 
 }
 

@@ -6,11 +6,11 @@ public class MainProgram {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
 
-        //userPrompting(userInput);
+        userPrompting(userInput);
 
 
-        Loan loan = new Loan("100000", "5", 360);
-        BigDecimal loanPayment = loan.getLoanPayment();
+//        Loan loan = new Loan("100000", "5", 360);
+//        BigDecimal loanPayment = loan.getLoanPayment();
     }
 
     private static void userPrompting(Scanner userInput) {
@@ -49,7 +49,7 @@ public class MainProgram {
             loan = new Loan(loanAmountInput, interestRateInput, termInMonths);
         }
 
-        //System.out.print(loan.displayLoanAmortizationTableFromPaymentList());
+        System.out.print(loan.displayLoanAmortizationTableFromPaymentList());
     }
 
 }

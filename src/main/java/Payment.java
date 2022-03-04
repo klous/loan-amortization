@@ -1,35 +1,37 @@
+import java.math.BigDecimal;
+
 public class Payment {
     private int paymentNumber;
-    private double loanPayment;
-    private double endingBalance;
-    private double principalApplied;
-    private double interest;
+    private BigDecimal loanPayment;
+    private BigDecimal endingBalance;
+    private BigDecimal principalApplied;
+    private BigDecimal interestPayment;
 
     public int getPaymentNumber() {
         return paymentNumber;
     }
 
-    public double getLoanPayment() {
+    public BigDecimal getLoanPayment() {
         return loanPayment;
     }
 
-    public double getEndingBalance() {
+    public BigDecimal getEndingBalance() {
         return endingBalance;
     }
 
-    public double getInterest() {
-        return interest;
+    public BigDecimal getInterestPayment() {
+        return interestPayment;
     }
 
-    public double getPrincipalApplied() {
+    public BigDecimal getPrincipalApplied() {
         return principalApplied;
     }
 
-     public Payment(int paymentNumber, double loanPayment, double principalApplied, double interest, double endingBalance ){
+     public Payment(int paymentNumber, BigDecimal loanPayment, BigDecimal principalApplied, BigDecimal interestPayment, BigDecimal endingBalance ){
         this.paymentNumber = paymentNumber;
         this.loanPayment = loanPayment;
         this.principalApplied = principalApplied;
-        this.interest = interest;
+        this.interestPayment = interestPayment;
         this.endingBalance = endingBalance;
      }
 
