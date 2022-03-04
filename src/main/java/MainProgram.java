@@ -26,7 +26,7 @@ public class MainProgram {
         boolean extraPayment = false;
 
         while(!validInput){
-            System.out.print("Would you like to make an extra payment each month and see how it affects your loan amortization? (Y)es or (N)o >> ");
+            System.out.print("Would you like to make an extra payment each month? (Y)es or (N)o >> ");
             String extraPaymentYN = userInput.nextLine();
             if(extraPaymentYN.equalsIgnoreCase("Y")){
                 extraPayment = true;
